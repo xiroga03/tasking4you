@@ -1,122 +1,157 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+
+import { useState } from 'react';
+import { CheckCircle2, Clock3, ListTodo, Sparkles } from 'lucide-react';
+
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
+import TaskForm from './components/TaskForm';
+import TaskList from './components/TaskList';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tasks, setTasks] = useState([]);
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const addTask = (taskData) => {
+    const newTask = {
+      id: Date.now(),
+      title: taskData.title,
+      description: taskData.description,
+      done: false
+    };
+
+    setTasks((previousTasks) => [newTask, ...previousTasks]);
+  };
+
+  const toggleTask = (id) => {
+    setTasks((previousTasks) =>
+      previousTasks.map((task) =>
+        task.id === id ? { ...task, done: !task.done } : task
+      )
+    );
+  };
+
+  const deleteTask = (id) => {
+    setTasks((previousTasks) =>
+      previousTasks.filter((task) => task.id !== id)
+    );
+  };
+
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter((task) => task.done).length;
+  const pendingTasks = totalTasks - completedTasks;
+
+  const filteredTasks = tasks.filter((task) => {
+    const matchesFilter =
+      activeFilter === 'all' ||
+      (activeFilter === 'pending' && !task.done) ||
+      (activeFilter === 'completed' && task.done);
+
+    const matchesSearch =
+      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesFilter && matchesSearch;
+  });
+
+  const taskCounts = {
+    total: totalTasks,
+    pending: pendingTasks,
+    completed: completedTasks
+  };
+
+  const today = new Intl.DateTimeFormat('es-CO', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long'
+  }).format(new Date());
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="app-layout">
+      <Sidebar
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
+        taskCounts={taskCounts}
+      />
 
-      <div className="ticks"></div>
+      <main className="main-content">
+        <Header
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <div className="dashboard-content">
+          <section className="welcome-section">
+            <div>
+              <span className="date-label">{today}</span>
+              <h1>¡Hola! Bienvenido a tu espacio.</h1>
+              <p>Organiza tus actividades y haz que cada día cuente.</p>
+            </div>
+            <div className="welcome-decoration">
+              <Sparkles size={38} />
+            </div>
+          </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+          <section className="stats-grid">
+            <article className="stat-card">
+              <div className="stat-icon purple">
+                <ListTodo size={22} />
+              </div>
+              <span className="stat-label">Total de tareas</span>
+              <strong>{totalTasks}</strong>
+              <span className="stat-description">Actividades registradas</span>
+            </article>
+
+            <article className="stat-card">
+              <div className="stat-icon orange">
+                <Clock3 size={22} />
+              </div>
+              <span className="stat-label">Pendientes</span>
+              <strong>{pendingTasks}</strong>
+              <span className="stat-description">Por realizar</span>
+            </article>
+
+            <article className="stat-card">
+              <div className="stat-icon green">
+                <CheckCircle2 size={22} />
+              </div>
+              <span className="stat-label">Completadas</span>
+              <strong>{completedTasks}</strong>
+              <span className="stat-description">Objetivos alcanzados</span>
+            </article>
+          </section>
+
+          <section className="workspace">
+            <div className="workspace-main">
+              <div className="section-heading">
+                <div>
+                  <h2>Mis actividades</h2>
+                  <p>Administra y revisa tus tareas.</p>
+                </div>
+                <span className="task-total">{filteredTasks.length} tareas</span>
+              </div>
+
+              <TaskList
+                tasks={filteredTasks}
+                onToggleTask={toggleTask}
+                onDeleteTask={deleteTask}
+              />
+            </div>
+
+            <div className="workspace-form">
+              <TaskForm onAddTask={addTask} />
+            </div>
+          </section>
+
+          <footer className="dashboard-footer">
+            <span>Tasking4You © 2026</span>
+            <span>Organiza tu tiempo, alcanza tus metas.</span>
+          </footer>
+        </div>
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
