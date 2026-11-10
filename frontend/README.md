@@ -1,16 +1,41 @@
-# React + Vite
+# Frontend — Tasking4You
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interfaz web construida con React, Vite y CSS.
 
-Currently, two official plugins are available:
+## Requisitos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js 20 o superior.
+- npm.
 
-## React Compiler
+## Instalación
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Desde esta carpeta:
 
-## Expanding the ESLint configuration
+```bash
+npm install
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Desarrollo
+
+```bash
+npm run dev
+```
+
+Vite mostrará la URL local, normalmente `http://localhost:5173`.
+
+## Validaciones
+
+```bash
+npm run lint
+npm run build
+```
+
+## Componentes principales
+
+- `App.jsx`: tablero y estado de la interfaz.
+- `components/Sidebar.jsx`: navegación y filtros.
+- `components/Header.jsx`: encabezado y búsqueda.
+- `components/TaskForm.jsx`: formulario de creación.
+- `components/TaskList.jsx`: listado, finalización y eliminación.
+
+> Estado actual: el dashboard maneja las tareas en el estado local de React. La conexión con la API REST y la persistencia PostgreSQL están pendientes de integración.
