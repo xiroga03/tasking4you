@@ -6,6 +6,22 @@ function createTaskService(repository = defaultRepository) {
       return repository.findAll();
     },
 
+    async getTaskSummary() {
+      const summary = await repository.getSummary();
+      const total = Number(summary.total) || 0;
+      const completed = Number(summary.completed) || 0;
+      const pending = Number(summary.pending) || 0;
+
+      return {
+        total,
+        completed,
+        pending,
+        completionRate: total === 0
+          ? 0
+          : Number(((completed / total) * 100).toFixed(2))
+      };
+    },
+
     async createTask(payload) {
       if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
         const error = new Error('El cuerpo de la solicitud debe ser un objeto JSON.');
