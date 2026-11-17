@@ -7,6 +7,14 @@ function makeRepository() {
   let nextId = 1;
   return {
     async findAll() { return [...data]; },
+    async getSummary() {
+      const completed = data.filter((item) => item.completed).length;
+      return {
+        total: String(data.length),
+        completed: String(completed),
+        pending: String(data.length - completed)
+      };
+    },
     async create(task) {
       const created = { id: nextId++, ...task, completed: false,
         created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
@@ -65,4 +73,29 @@ test('elimina una tarea existente y devuelve false si no existe', async () => {
   const task = await service.createTask({ title: 'Tarea temporal' });
   assert.equal(await service.deleteTask(String(task.id)), true);
   assert.equal(await service.deleteTask(String(task.id)), false);
+});
+
+test('calcula total, completadas, pendientes y porcentaje de finalización', async () => {
+  const repository = makeRepository();
+  const service = createTaskService(repository);
+  const first = await service.createTask({ title: 'Primera tarea' });
+  await service.createTask({ title: 'Segunda tarea' });
+  await service.updateTask(String(first.id), { completed: true });
+
+  assert.deepEqual(await service.getTaskSummary(), {
+    total: 2,
+    completed: 1,
+    pending: 1,
+    completionRate: 50
+  });
+});
+
+test('devuelve estadísticas en cero cuando no existen tareas', async () => {
+  const service = createTaskService(makeRepository());
+  assert.deepEqual(await service.getTaskSummary(), {
+    total: 0,
+    completed: 0,
+    pending: 0,
+    completionRate: 0
+  });
 });
