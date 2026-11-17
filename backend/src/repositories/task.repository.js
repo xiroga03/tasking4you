@@ -9,6 +9,17 @@ async function findAll() {
   return rows;
 }
 
+async function getSummary() {
+  const { rows } = await pool.query(
+    `SELECT
+       COUNT(*) AS total,
+       COUNT(*) FILTER (WHERE completed = TRUE) AS completed,
+       COUNT(*) FILTER (WHERE completed = FALSE) AS pending
+     FROM tasks`
+  );
+  return rows[0];
+}
+
 async function create(task) {
   const { rows } = await pool.query(
     `INSERT INTO tasks (title, description)
@@ -35,4 +46,4 @@ async function remove(id) {
   return rowCount > 0;
 }
 
-module.exports = { findAll, create, update, remove };
+module.exports = { findAll, getSummary, create, update, remove };
