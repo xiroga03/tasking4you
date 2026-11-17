@@ -2,6 +2,7 @@ const express = require('express');
 
 function createTaskRoutes(controller) {
   const router = express.Router();
+  router.get('/summary', controller.getTaskSummary);
   router.get('/', controller.getTasks);
   router.post('/', controller.createTask);
   router.patch('/:id', controller.updateTask);
