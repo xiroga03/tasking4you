@@ -9,6 +9,15 @@ function createTaskController(taskService) {
       }
     },
 
+    async getTaskSummary(req, res, next) {
+      try {
+        const summary = await taskService.getTaskSummary();
+        res.status(200).json({ summary });
+      } catch (error) {
+        next(error);
+      }
+    },
+
     async createTask(req, res, next) {
       try {
         const task = await taskService.createTask(req.body);
