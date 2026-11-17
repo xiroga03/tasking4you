@@ -34,9 +34,27 @@ Base URL: `/api`
 |---|---|---|---|
 | GET | `/health` | Comprueba API y conexión a PostgreSQL. | `200` o `503`. |
 | GET | `/tasks` | Lista las tareas. | `200 { "tasks": [] }` |
+| GET | `/tasks/summary` | Devuelve el total, las completadas, las pendientes y el porcentaje de finalización. | `200 { "summary": {...} }` |
 | POST | `/tasks` | Crea una tarea. | `201` con `task`. |
 | PATCH | `/tasks/:id` | Cambia el estado de una tarea. | `200` con `task`; `404` si no existe. |
 | DELETE | `/tasks/:id` | Elimina una tarea. | `200` si se elimina; `404` si no existe. |
+
+### Consultar resumen de tareas
+`GET /api/tasks/summary`
+
+Ejemplo de respuesta:
+```json
+{
+  "summary": {
+    "total": 12,
+    "completed": 7,
+    "pending": 5,
+    "completionRate": 58.33
+  }
+}
+```
+
+El porcentaje se calcula como tareas completadas dividido por el total, multiplicado por 100. Cuando no hay tareas, el porcentaje es cero.
 
 ### Crear tarea
 `POST /api/tasks`
